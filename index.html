@@ -1176,7 +1176,7 @@ footer p + p { margin-top: 4px; }
   </div>
   
 <div class="tree-intro">
-  <p>Arbre des ascendants de <strong>Bernard GOSSET</strong> — jusqu'à la 9e génération.</p>
+  <p>Arbre des ascendants de <strong>Bernard GOSSET</strong> — jusqu'à la 10e génération.</p>
   <p class="tree-legend">
     <span class="legend-m">♂ Homme</span>
     <span class="legend-f">♀ Femme</span>
@@ -1270,6 +1270,25 @@ footer p + p { margin-top: 4px; }
       <span class="tree-nom">GOSSET</span>
       <span class="tree-birth">✶ 14 mar. 1686</span><span class="tree-death">† 1748</span>
     </a></div>
+<div class="tree-right">
+  <div class="tree-connector"></div>
+  <div class="tree-ancestors">
+    <div class="tree-ancestor-row"><div class="tree-branch">
+  <div class="tree-node male"><a href="#ind-I0019" class="tree-name-link">
+      <span class="tree-prenom">François</span>
+      <span class="tree-nom">GOSSET</span>
+      <span class="tree-birth">✶ 1650</span><span class="tree-death">† 30 jan. 1716</span>
+    </a></div>
+</div></div>
+    <div class="tree-ancestor-row"><div class="tree-branch">
+  <div class="tree-node female"><a href="#ind-I0020" class="tree-name-link">
+      <span class="tree-prenom">Catherine</span>
+      <span class="tree-nom">LEQUERRE</span>
+      <span class="tree-birth">✶ 1655</span><span class="tree-death">† 22 jan. 1706</span>
+    </a></div>
+</div></div>
+  </div>
+</div>
 </div></div>
     <div class="tree-ancestor-row"><div class="tree-branch">
   <div class="tree-node female"><a href="#ind-I0018" class="tree-name-link">
@@ -1428,6 +1447,13 @@ function showTab(tab) {
   }
 }
 
+function focusIndividualFromHash() {
+  if (!window.location.hash || !window.location.hash.startsWith('#ind-')) return;
+  var target = document.querySelector(window.location.hash);
+  if (!target) return;
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function applyTreeZoom() {
   var stage = document.getElementById('tree-zoom-stage');
   var label = document.getElementById('tree-zoom-value');
@@ -1512,10 +1538,20 @@ function fixTreeConnectors() {
 document.addEventListener('DOMContentLoaded', function() {
   showTab('individus');
   applyTreeZoom();
+  focusIndividualFromHash();
   window.addEventListener('hashchange', function() {
     if (window.location.hash && window.location.hash.startsWith('#ind-')) {
       showTab('individus');
+      setTimeout(focusIndividualFromHash, 20);
     }
+  });
+  document.addEventListener('click', function(event) {
+    var link = event.target.closest('a[href^="#ind-"]');
+    if (!link) return;
+    setTimeout(function() {
+      showTab('individus');
+      focusIndividualFromHash();
+    }, 20);
   });
 });
 
