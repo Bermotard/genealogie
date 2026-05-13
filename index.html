@@ -1,391 +1,25 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Généalogie Gosset · Bodecher</title>
-<style>
-
-/* Reset & base */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: 'Georgia', serif; background: #F4EFE6; color: #2C2418; font-size: 15px; }
-a { color: #5C3D1E; text-decoration: none; border-bottom: 1px dotted #A0805A; }
-a:hover { color: #2C1A00; border-bottom-color: #2C1A00; }
-
-/* En-tête */
-header {
-  background: linear-gradient(135deg, #2C1810 0%, #5C3D1E 50%, #3D5C1E 100%);
-  color: #F5ECD5;
-  padding: 0;
-}
-.header-inner {
-  max-width: 1400px; margin: 0 auto;
-  padding: 28px 40px;
-  display: flex; align-items: center; justify-content: space-between; gap: 30px;
-  flex-wrap: wrap;
-}
-header h1 { font-size: 2rem; font-weight: normal; letter-spacing: 2px; }
-header h1 em { font-style: italic; color: #D4B896; }
-.header-sub { margin-top: 6px; opacity: 0.75; font-size: 0.85rem; font-style: italic; }
-.header-stats { display: flex; gap: 24px; flex-wrap: wrap; }
-.stat { text-align: center; }
-.stat-num { display: block; font-size: 1.7rem; font-weight: bold; color: #D4B896; }
-.stat-lbl { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
-
-/* Barre d'outils */
-.toolbar {
-  background: #FBF7F0;
-  border-bottom: 2px solid #D4B896;
-  padding: 10px 40px;
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-  position: sticky; top: 0; z-index: 200;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.10);
-}
-.toolbar-tabs { display: flex; gap: 6px; }
-.tab-btn {
-  padding: 7px 18px; border: 1px solid #C8A870;
-  border-radius: 20px; background: white; cursor: pointer;
-  font-size: 0.88rem; font-family: inherit;
-  transition: all 0.2s; color: #5C3D1E;
-}
-.tab-btn:hover { background: #F5E6C8; }
-.tab-btn.active { background: #5C3D1E; color: white; border-color: #5C3D1E; }
-.toolbar-filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-#search {
-  padding: 7px 14px; border: 1px solid #C8A870;
-  border-radius: 20px; font-size: 0.88rem; font-family: inherit;
-  width: 200px; outline: none; background: white;
-}
-#search:focus { border-color: #5C3D1E; box-shadow: 0 0 0 2px rgba(92,61,30,0.15); }
-.filter-btn {
-  padding: 6px 14px; border: 1px solid #C8A870;
-  border-radius: 20px; background: white; cursor: pointer;
-  font-size: 0.83rem; font-family: inherit; color: #5C3D1E;
-  transition: all 0.2s;
-}
-.filter-btn:hover { background: #F5E6C8; }
-.filter-btn.active { background: #5C3D1E; color: white; border-color: #5C3D1E; }
-.filter-btn.active-m { background: #2563EB; color: white; border-color: #2563EB; }
-.filter-btn.active-f { background: #DB2777; color: white; border-color: #DB2777; }
-
-/* Sections */
-.tab-section { display: none; max-width: 1400px; margin: 0 auto; padding: 30px 40px; }
-.tab-section.active { display: block; }
-.section-header { margin-bottom: 20px; border-bottom: 1px solid #D4B896; padding-bottom: 10px; }
-.section-header h2 { font-size: 1.1rem; font-weight: normal; text-transform: uppercase; letter-spacing: 2px; color: #5C3D1E; }
-.count { font-size: 0.85rem; color: #999; }
-
-/* Grille individus */
-.ind-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 16px;
-}
-
-/* Carte individu */
-.ind-card {
-  background: white; border-radius: 10px;
-  border-left: 5px solid #9CA3AF;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  transition: box-shadow 0.2s, transform 0.1s;
-  overflow: hidden;
-  scroll-margin-top: 96px;
-}
-.ind-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.13); transform: translateY(-1px); }
-.ind-card.gender-male { border-left-color: #2563EB; }
-.ind-card.gender-female { border-left-color: #DB2777; }
-.ind-card.gender-unknown { border-left-color: #9CA3AF; }
-
-.ind-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px 10px;
-  background: #FAFAFA; border-bottom: 1px solid #F0EBE0;
-}
-.gender-badge {
-  width: 30px; height: 30px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; color: white; flex-shrink: 0;
-}
-.gender-badge.male { background: #2563EB; }
-.gender-badge.female { background: #DB2777; }
-.gender-badge.unknown { background: #9CA3AF; }
-
-.ind-name { flex: 1; min-width: 0; }
-.ind-prenom { display: block; font-size: 0.9rem; color: #666; }
-.ind-nom { display: block; font-size: 1.05rem; font-weight: bold; color: #1a1a1a; }
-.years { font-size: 0.78rem; color: #999; margin-left: 4px; }
-.ind-id { font-size: 0.72rem; color: #BBB; font-family: monospace; flex-shrink: 0; }
-
-.card-parents {
-  padding: 6px 16px;
-  background: #F9F5EE;
-  border-bottom: 1px solid #EDE8DF;
-  font-size: 0.82rem;
-}
-.parent-label { color: #999; font-size: 0.78rem; }
-
-.ind-body { padding: 10px 16px 14px; }
-.card-row { padding: 4px 0; font-size: 0.84rem; color: #444; display: flex; flex-wrap: wrap; gap: 4px; align-items: baseline; }
-.row-label { color: #888; font-size: 0.78rem; min-width: 110px; flex-shrink: 0; }
-.ev-date { color: #5C3D1E; font-weight: 500; }
-.ev-place { color: #555; }
-.ev-desc { color: #666; font-style: italic; }
-.ev-unknown { color: #BBB; font-style: italic; }
-
-/* Liens colorés selon genre */
-a.gender-m { color: #1D4ED8; }
-a.gender-f { color: #BE185D; }
-a.link-parent { font-size: 0.88rem; }
-a.link-spouse { font-size: 0.88rem; }
-a.link-child  { font-size: 0.86rem; }
-a.media-link {
-  font-size: 0.83rem;
-  padding: 1px 6px;
-  border: 1px solid #D8C3A4;
-  border-radius: 10px;
-  background: #FFFDF8;
-  display: inline-block;
-}
-
-/* Grille familles */
-.fam-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 16px;
-}
-.fam-card {
-  background: white; border-radius: 10px;
-  border-left: 5px solid #D4A017;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  padding: 0; overflow: hidden;
-  transition: box-shadow 0.2s;
-}
-.fam-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.13); }
-.fam-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px;
-  background: #FFFBF0; border-bottom: 1px solid #F0EBD8;
-}
-.fam-icon { font-size: 1.4rem; flex-shrink: 0; }
-.fam-parents { flex: 1; }
-.fam-pere, .fam-mere { font-size: 0.95rem; }
-.fam-amp { font-size: 0.8rem; color: #BBB; padding: 2px 0; }
-.fam-card .card-row { padding: 4px 16px; font-size: 0.84rem; }
-.fam-card .children-list {
-  list-style: none; padding-left: 16px; margin-top: 4px;
-}
-.fam-card .children-list li { padding: 2px 0; font-size: 0.84rem; }
-.fam-card .children-list li::before { content: "▸ "; color: #D4A017; }
-
-/* Inconnues */
-.unknown { color: #BBB; font-style: italic; }
-
-/* No results */
-.no-results {
-  text-align: center; padding: 60px 20px;
-  color: #BBB; font-style: italic; font-size: 1rem;
-}
-
-/* ===== ARBRE HORIZONTAL — racine à gauche, ancêtres vers la droite ===== */
-.tree-intro {
-  margin-bottom: 20px; padding: 14px 20px;
-  background: white; border-radius: 8px;
-  border-left: 4px solid #3D5C1E;
-  font-size: 0.9rem; color: #444;
-}
-.tree-legend { margin-top: 8px; display: flex; gap: 20px; }
-.legend-m, .legend-f, .legend-u {
-  padding: 3px 10px; border-radius: 12px; font-size: 0.8rem;
-}
-.legend-m { background: #DBEAFE; color: #1D4ED8; }
-.legend-f { background: #FCE7F3; color: #BE185D; }
-.legend-u { background: #F3F4F6; color: #9CA3AF; }
-
-.tree-container {
-  overflow-x: auto; overflow-y: auto;
-  padding: 20px 10px 30px;
-  background: #FAFAF7;
-  border-radius: 10px;
-  border: 1px solid #E8DFD0;
-}
-.tree-tools {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.tree-zoom-btn {
-  border: 1px solid #C8A870;
-  background: white;
-  color: #5C3D1E;
-  border-radius: 16px;
-  padding: 4px 10px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.85rem;
-}
-.tree-zoom-btn:hover { background: #F5E6C8; }
-.tree-zoom-label {
-  color: #666;
-  font-size: 0.82rem;
-  margin-left: 6px;
-}
-.tree-zoom-stage {
-  display: inline-block;
-  transform-origin: top left;
-}
-.tree-root {
-  display: inline-flex;
-  align-items: center;
-  min-width: max-content;
-  padding: 10px;
-}
-
-/*
-  .tree-branch = le nœud courant + (optionnellement) .tree-right
-  Disposition : [node]──[connecteur]──[père  ]
-                                   └──[mère  ]
-*/
-.tree-branch {
-  display: flex;
-  flex-direction: row;   /* nœud à gauche, ancêtres à droite */
-  align-items: center;
-}
-
-/* Boîte du nœud */
-.tree-node {
-  background: white;
-  border: 2px solid #C8A870;
-  border-radius: 8px;
-  padding: 8px 12px;
-  min-width: 130px;
-  max-width: 175px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.09);
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-.tree-node.male   { border-color: #2563EB; background: #EFF6FF; }
-.tree-node.female { border-color: #DB2777; background: #FDF2F8; }
-.tree-node.tree-unknown {
-  border-color: #D1D5DB; background: #F9FAFB;
-  min-width: 60px; text-align: center; color: #BBB; font-style: italic;
-}
-
-.tree-name-link {
-  display: flex; flex-direction: column;
-  border: none; text-decoration: none; color: inherit;
-}
-.tree-name-link:hover .tree-nom { text-decoration: underline; }
-.tree-prenom { font-size: 0.78rem; color: #666; }
-.tree-nom    { font-size: 0.88rem; font-weight: bold; color: #1a1a1a; }
-.tree-birth  { display: block; font-size: 0.70rem; color: #3D5C1E; margin-top: 3px; }
-.tree-death  { display: block; font-size: 0.70rem; color: #8B0000; }
-
-/*
-  Partie droite d'une branche : connecteur + colonne de deux ancêtres
-*/
-.tree-right {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-/*
-  Connecteur horizontal qui relie le nœud courant à la barre verticale
-  des deux parents. On le dessine avec une bordure sur un élément vide.
-*/
-.tree-connector {
-  width: 24px;
-  height: 2px;
-  background: #C8A870;
-  flex-shrink: 0;
-  position: relative;
-}
-/* Barre verticale reliant père et mère, au bout du connecteur */
-.tree-connector::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  /* top et height calculés dynamiquement via CSS custom properties
-     qu'on ne peut pas calculer ici — on utilise une approche différente :
-     la barre verticale est portée par .tree-ancestors */
-}
-
-/*
-  Colonne des deux ancêtres + barre verticale sur leur bord gauche
-*/
-.tree-ancestors {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  position: relative;
-}
-
-/* Barre verticale qui relie les deux .tree-ancestor-row */
-.tree-ancestors::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: calc(50% - 50%);   /* sera écrasé par le calcul réel */
-  width: 2px;
-  background: #C8A870;
-  /* On veut relier le milieu du père au milieu de la mère.
-     Avec gap: 10px et deux branches de hauteur variable, on approche
-     avec top/bottom calculés via pseudo-éléments des rows. */
-  top: 0; bottom: 0;
-}
-
-/* Chaque ligne ancêtre */
-.tree-ancestor-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  position: relative;
-}
-
-/* Petit trait horizontal de la barre verticale vers chaque ancêtre */
-.tree-ancestor-row::before {
-  content: '';
-  width: 24px;
-  height: 2px;
-  background: #C8A870;
-  flex-shrink: 0;
-}
-
-/* Footer */
-footer {
-  text-align: center; padding: 24px;
-  color: #AAA; font-size: 0.8rem;
-  border-top: 1px solid #E8DFD0; margin-top: 40px;
-}
-footer p + p { margin-top: 4px; }
-
-/* Responsive */
-@media (max-width: 700px) {
-  .header-inner { padding: 20px; flex-direction: column; text-align: center; }
-  .toolbar { padding: 10px 16px; }
-  .tab-section { padding: 20px 16px; }
-  .ind-grid, .fam-grid { grid-template-columns: 1fr; }
-}
-
-</style>
-</head>
-<body>
+  <html lang="fr">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Généalogie Gosset · Bodecher</title>
+  <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
 
 <!-- ===== EN-TÊTE ===== -->
 <header>
   <div class="header-inner">
     <div class="header-title">
       <h1>Généalogie <em>Gosset · Bodecher</em></h1>
-      <p class="header-sub">Bernard Albert Gosset — 6-05-2026 v1</p>
+      <p class="header-sub">Bernard Albert Gosset — Grenoble, France · Données Gramps Web 6.0.8</p>
     </div>
     <div class="header-stats">
-      <div class="stat"><span class="stat-num">23</span><span class="stat-lbl">Individus</span></div>
-      <div class="stat"><span class="stat-num">13</span><span class="stat-lbl">♂ Hommes</span></div>
-      <div class="stat"><span class="stat-num">10</span><span class="stat-lbl">♀ Femmes</span></div>
-      <div class="stat"><span class="stat-num">15</span><span class="stat-lbl">Familles</span></div>
+      <div class="stat"><span class="stat-num">26</span><span class="stat-lbl">Individus</span></div>
+      <div class="stat"><span class="stat-num">14</span><span class="stat-lbl">♂ Hommes</span></div>
+      <div class="stat"><span class="stat-num">12</span><span class="stat-lbl">♀ Femmes</span></div>
+      <div class="stat"><span class="stat-num">16</span><span class="stat-lbl">Familles</span></div>
       <div class="stat"><span class="stat-num">1650</span><span class="stat-lbl">Plus ancienne date</span></div>
     </div>
   </div>
@@ -409,10 +43,31 @@ footer p + p { margin-top: 4px; }
 <!-- ===== SECTION INDIVIDUS ===== -->
 <section class="tab-section active" id="tab-individus">
   <div class="section-header">
-    <h2>Individus <span class="count" id="ind-count">(23)</span></h2>
+    <h2>Individus <span class="count" id="ind-count">(26)</span></h2>
   </div>
   <div class="ind-grid" id="ind-grid">
     
+<div class="ind-card gender-male" id="ind-I0026" data-name="Damien Bodecher" data-gender="M">
+  <div class="ind-header">
+    <span class="gender-badge male">♂</span>
+    <div class="ind-name">
+      <span class="ind-prenom">Damien</span>
+      <span class="ind-nom">Bodecher</span>
+      <span class="years">(12/04/1829)</span>
+    </div>
+    <span class="ind-id">I0026</span>
+  </div>
+  
+  <div class="ind-body">
+    <div class="card-row"><span class="row-label">🎂 Naissance :</span> <span class="ev-date">12/04/1829</span> <span class="ev-desc">naissance de Damien Bodecher le 12-04-1829 a champagnac</span></div>
+    
+    <div class="card-row"><span class="row-label">💑 Conjoint :</span> <a href="#ind-I0027" class="link-spouse" gender-f>Julie Bouquet</a></div>
+    <div class="card-row"><span class="row-label">👶 Enfant (1) :</span> <a href="#ind-I0023" class="link-child" gender-m>Pierre Auguste Bodecher</a></div>
+    <div class="card-row"><span class="row-label">🖼 Médias (2) :</span> <a class="media-link" href="media/59b066dba82a2632b7109feeb87dafe9.png" target="_blank" rel="noopener">naissance damien bodecher 12-04-1829--1</a> · <a class="media-link" href="media/ac0b7b61573f3b295df655716be15c4f.png" target="_blank" rel="noopener">naissance damien bodecher 12-04-1829--2</a></div>
+    
+  </div>
+</div>
+
 <div class="ind-card gender-male" id="ind-I0021" data-name="Marcel Auguste Bodecher" data-gender="M">
   <div class="ind-header">
     <span class="gender-badge male">♂</span>
@@ -423,7 +78,7 @@ footer p + p { margin-top: 4px; }
     </div>
     <span class="ind-id">I0021</span>
   </div>
-  <div class="card-parents"><span class="parent-label">Père :</span> <a href="#ind-I0023" class="link-parent" gender-m>Perre Auguste Bodecher</a></div>
+  <div class="card-parents"><span class="parent-label">Père :</span> <a href="#ind-I0023" class="link-parent" gender-m>Pierre Auguste Bodecher</a>&nbsp;&nbsp;|&nbsp;&nbsp;<span class="parent-label">Mère :</span> <a href="#ind-I0025" class="link-parent" gender-f>Horentine Chambaz</a></div>
   <div class="ind-body">
     <div class="card-row"><span class="row-label">🎂 Naissance :</span> <span class="ev-date">31/08/1898</span></div>
     <div class="card-row"><span class="row-label">✝ Décès :</span> <span class="ev-date">20/04/1934</span> <span class="ev-place">📍 Granieux</span></div>
@@ -434,21 +89,21 @@ footer p + p { margin-top: 4px; }
   </div>
 </div>
 
-<div class="ind-card gender-male" id="ind-I0023" data-name="Perre Auguste Bodecher" data-gender="M">
+<div class="ind-card gender-male" id="ind-I0023" data-name="Pierre Auguste Bodecher" data-gender="M">
   <div class="ind-header">
     <span class="gender-badge male">♂</span>
     <div class="ind-name">
-      <span class="ind-prenom">Perre Auguste</span>
+      <span class="ind-prenom">Pierre Auguste</span>
       <span class="ind-nom">Bodecher</span>
       <span class="years">(15/07/1872)</span>
     </div>
     <span class="ind-id">I0023</span>
   </div>
-  
+  <div class="card-parents"><span class="parent-label">Père :</span> <a href="#ind-I0026" class="link-parent" gender-m>Damien Bodecher</a>&nbsp;&nbsp;|&nbsp;&nbsp;<span class="parent-label">Mère :</span> <a href="#ind-I0027" class="link-parent" gender-f>Julie Bouquet</a></div>
   <div class="ind-body">
     <div class="card-row"><span class="row-label">🎂 Naissance :</span> <span class="ev-date">15/07/1872</span> <span class="ev-place">📍 Granieux</span></div>
     
-    
+    <div class="card-row"><span class="row-label">💑 Conjoint :</span> <a href="#ind-I0025" class="link-spouse" gender-f>Horentine Chambaz</a></div>
     <div class="card-row"><span class="row-label">👶 Enfant (1) :</span> <a href="#ind-I0021" class="link-child" gender-m>Marcel Auguste Bodecher</a></div>
     <div class="card-row"><span class="row-label">🖼 Médias (2) :</span> <a class="media-link" href="media/ef3c04861c97d9041bd97b0084004b56.jpg" target="_blank" rel="noopener">acte naissance Pierre Auguste Bodecher 15 07 1872</a> · <a class="media-link" href="media/dea57787c142dc632879edffecf57514.jpg" target="_blank" rel="noopener">Matricule Bodecher pierre augusteclasse 1892</a></div>
     
@@ -474,6 +129,48 @@ footer p + p { margin-top: 4px; }
     
     <div class="card-row"><span class="row-label">🏠 Résidence :</span> <span class="ev-place">📍 15 Clos du Buisson, Annecy le vieux</span></div>
 <div class="card-row"><span class="row-label">💼 Profession :</span> <span class="ev-desc">Sans</span></div>
+  </div>
+</div>
+
+<div class="ind-card gender-female" id="ind-I0027" data-name="Julie Bouquet" data-gender="F">
+  <div class="ind-header">
+    <span class="gender-badge female">♀</span>
+    <div class="ind-name">
+      <span class="ind-prenom">Julie</span>
+      <span class="ind-nom">Bouquet</span>
+      <span class="years">(19/03/1832)</span>
+    </div>
+    <span class="ind-id">I0027</span>
+  </div>
+  
+  <div class="ind-body">
+    <div class="card-row"><span class="row-label">🎂 Naissance :</span> <span class="ev-date">19/03/1832</span></div>
+    
+    <div class="card-row"><span class="row-label">💑 Conjoint :</span> <a href="#ind-I0026" class="link-spouse" gender-m>Damien Bodecher</a></div>
+    <div class="card-row"><span class="row-label">👶 Enfant (1) :</span> <a href="#ind-I0023" class="link-child" gender-m>Pierre Auguste Bodecher</a></div>
+    <div class="card-row"><span class="row-label">🖼 Médias (1) :</span> <a class="media-link" href="media/a6f4b24081057cff6f20637af21309c2.png" target="_blank" rel="noopener">naissance bouquet julie 19-03-1834</a></div>
+    
+  </div>
+</div>
+
+<div class="ind-card gender-female" id="ind-I0025" data-name="Horentine Chambaz" data-gender="F">
+  <div class="ind-header">
+    <span class="gender-badge female">♀</span>
+    <div class="ind-name">
+      <span class="ind-prenom">Horentine</span>
+      <span class="ind-nom">Chambaz</span>
+      
+    </div>
+    <span class="ind-id">I0025</span>
+  </div>
+  
+  <div class="ind-body">
+    
+    
+    <div class="card-row"><span class="row-label">💑 Conjoint :</span> <a href="#ind-I0023" class="link-spouse" gender-m>Pierre Auguste Bodecher</a></div>
+    <div class="card-row"><span class="row-label">👶 Enfant (1) :</span> <a href="#ind-I0021" class="link-child" gender-m>Marcel Auguste Bodecher</a></div>
+    
+    <div class="card-row"><span class="row-label">💒 Mariage :</span> <span class="ev-date">10/12/1797</span> <span class="ev-desc">Mariage avec Pierre Auguste Bodecher à bourgoin</span></div>
   </div>
 </div>
 
@@ -546,14 +243,14 @@ footer p + p { margin-top: 4px; }
     <div class="ind-name">
       <span class="ind-prenom">Albert Ernest</span>
       <span class="ind-nom">GOSSET</span>
-      <span class="years">(1905–1969)</span>
+      <span class="years">(11/12/1905–08/04/1969)</span>
     </div>
     <span class="ind-id">I0005</span>
   </div>
   <div class="card-parents"><span class="parent-label">Père :</span> <a href="#ind-I0007" class="link-parent" gender-m>Ernest GOSSET</a>&nbsp;&nbsp;|&nbsp;&nbsp;<span class="parent-label">Mère :</span> <a href="#ind-I0008" class="link-parent" gender-f>Marie-Rosalie HORNY</a></div>
   <div class="ind-body">
-    <div class="card-row"><span class="row-label">🎂 Naissance :</span> <span class="ev-date">11 déc. 1905</span> <span class="ev-place">📍 Reims</span></div>
-    <div class="card-row"><span class="row-label">✝ Décès :</span> <span class="ev-date">8 avr. 1969</span> <span class="ev-place">📍 Lyon 5eme</span></div>
+    <div class="card-row"><span class="row-label">🎂 Naissance :</span> <span class="ev-date">11/12/1905</span> <span class="ev-place">📍 Reims</span> <span class="ev-desc">Nessance de Albert Ernest Gosset le 11/12/1905</span></div>
+    <div class="card-row"><span class="row-label">✝ Décès :</span> <span class="ev-date">08/04/1969</span> <span class="ev-place">📍 Lyon 5eme</span> <span class="ev-desc">Décès de Albert Ernest Gosset Le 8 avril 1969</span></div>
     <div class="card-row"><span class="row-label">💑 Conjoint :</span> <a href="#ind-I0006" class="link-spouse" gender-f>Augusta REY</a></div>
     <div class="card-row"><span class="row-label">👶 Enfant (1) :</span> <a href="#ind-I0002" class="link-child" gender-m>Emile GOSSET</a></div>
     <div class="card-row"><span class="row-label">🖼 Médias (1) :</span> <a class="media-link" href="media/cfbdf30f83df51daacb1004239ff6471.pdf" target="_blank" rel="noopener">GP_Albert_ernest_11-12-1905_2290</a></div>
@@ -640,7 +337,7 @@ footer p + p { margin-top: 4px; }
     <div class="card-row"><span class="row-label">✝ Décès :</span> <span class="ev-date">30 jan. 1716</span> <span class="ev-place">📍 Saint-Souplet,59360,Nord,Nord-Pas-de-Calais,FRANCE</span></div>
     <div class="card-row"><span class="row-label">💑 Conjoint :</span> <a href="#ind-I0020" class="link-spouse" gender-f>Catherine LEQUERRE</a></div>
     <div class="card-row"><span class="row-label">👶 Enfant (1) :</span> <a href="#ind-I0017" class="link-child" gender-m>Roland GOSSET</a></div>
-    
+    <div class="card-row"><span class="row-label">🖼 Médias (1) :</span> <a class="media-link" href="media/a262d5557f23f36186bc1c7edaa0d2c7.png" target="_blank" rel="noopener">deces francois gosset 30-06-1716 saint-souplet</a></div>
     
   </div>
 </div>
@@ -766,7 +463,7 @@ footer p + p { margin-top: 4px; }
     <div class="card-row"><span class="row-label">✝ Décès :</span> <span class="ev-date">1748</span></div>
     <div class="card-row"><span class="row-label">💑 Conjoint :</span> <a href="#ind-I0018" class="link-spouse" gender-f>Marie-Margurite REAL</a></div>
     <div class="card-row"><span class="row-label">👶 Enfant (1) :</span> <a href="#ind-I0015" class="link-child" gender-m>Pierre GOSSET</a></div>
-    
+    <div class="card-row"><span class="row-label">🖼 Médias (1) :</span> <a class="media-link" href="media/d9b76f3533a95e3df458083f7ddffdb6.png" target="_blank" rel="noopener">naissance roland gosset 14-03-1686</a></div>
     <div class="card-row"><span class="row-label">💼 Profession :</span> <span class="ev-desc">Berger</span></div>
   </div>
 </div>
@@ -905,7 +602,7 @@ footer p + p { margin-top: 4px; }
 <!-- ===== SECTION FAMILLES ===== -->
 <section class="tab-section" id="tab-familles">
   <div class="section-header">
-    <h2>Familles <span class="count">(15)</span></h2>
+    <h2>Familles <span class="count">(16)</span></h2>
   </div>
   <div class="fam-grid">
     
@@ -973,7 +670,7 @@ footer p + p { margin-top: 4px; }
   
     <div class="card-row">
       <span class="row-label">👶 Enfants (1) :</span>
-      <ul class="children-list"><li>♂ <a href="#ind-I0005" gender-m>Albert Ernest GOSSET</a> (11 déc. 1905)</li></ul>
+      <ul class="children-list"><li>♂ <a href="#ind-I0005" gender-m>Albert Ernest GOSSET</a> (11/12/1905)</li></ul>
     </div>
 </div>
 
@@ -1131,24 +828,6 @@ footer p + p { margin-top: 4px; }
     </div>
 </div>
 
-<div class="fam-card" id="fam-F0014">
-  <div class="fam-header">
-    <span class="fam-icon">👨‍👩‍👦</span>
-    <div class="fam-parents">
-      <div class="fam-pere"><a href="#ind-I0023" class="link-parent" gender-m>Perre Auguste Bodecher</a></div>
-      <div class="fam-amp">&amp;</div>
-      <div class="fam-mere"><span class="unknown">Mère inconnue</span></div>
-    </div>
-    <span class="ind-id">F0014</span>
-  </div>
-  
-  
-    <div class="card-row">
-      <span class="row-label">👶 Enfants (1) :</span>
-      <ul class="children-list"><li>♂ <a href="#ind-I0021" gender-m>Marcel Auguste Bodecher</a> (31/08/1898)</li></ul>
-    </div>
-</div>
-
 <div class="fam-card" id="fam-F0015">
   <div class="fam-header">
     <span class="fam-icon">👨‍👩‍👦</span>
@@ -1164,6 +843,42 @@ footer p + p { margin-top: 4px; }
     <div class="card-row">
       <span class="row-label">👶 Enfants (1) :</span>
       <ul class="children-list"><li>♀ <a href="#ind-I0022" gender-f>albertine Henriette Garavel</a> (17/08/1899)</li></ul>
+    </div>
+</div>
+
+<div class="fam-card" id="fam-F0016">
+  <div class="fam-header">
+    <span class="fam-icon">👨‍👩‍👦</span>
+    <div class="fam-parents">
+      <div class="fam-pere"><a href="#ind-I0023" class="link-parent" gender-m>Pierre Auguste Bodecher</a></div>
+      <div class="fam-amp">&amp;</div>
+      <div class="fam-mere"><a href="#ind-I0025" class="link-parent" gender-f>Horentine Chambaz</a></div>
+    </div>
+    <span class="ind-id">F0016</span>
+  </div>
+  <div class="card-row"><span class="row-label">💒 Mariage :</span> <span class="ev-date">10/12/1797</span> <span class="ev-desc">Mariage avec Pierre Auguste Bodecher à bourgoin</span></div>
+  
+    <div class="card-row">
+      <span class="row-label">👶 Enfants (1) :</span>
+      <ul class="children-list"><li>♂ <a href="#ind-I0021" gender-m>Marcel Auguste Bodecher</a> (31/08/1898)</li></ul>
+    </div>
+</div>
+
+<div class="fam-card" id="fam-F0017">
+  <div class="fam-header">
+    <span class="fam-icon">👨‍👩‍👦</span>
+    <div class="fam-parents">
+      <div class="fam-pere"><a href="#ind-I0026" class="link-parent" gender-m>Damien Bodecher</a></div>
+      <div class="fam-amp">&amp;</div>
+      <div class="fam-mere"><a href="#ind-I0027" class="link-parent" gender-f>Julie Bouquet</a></div>
+    </div>
+    <span class="ind-id">F0017</span>
+  </div>
+  
+  
+    <div class="card-row">
+      <span class="row-label">👶 Enfants (1) :</span>
+      <ul class="children-list"><li>♂ <a href="#ind-I0023" gender-m>Pierre Auguste Bodecher</a> (15/07/1872)</li></ul>
     </div>
 </div>
   </div>
@@ -1214,7 +929,7 @@ footer p + p { margin-top: 4px; }
   <div class="tree-node male"><a href="#ind-I0005" class="tree-name-link">
       <span class="tree-prenom">Albert Ernest</span>
       <span class="tree-nom">GOSSET</span>
-      <span class="tree-birth">✶ 11 déc. 1905</span><span class="tree-death">† 8 avr. 1969</span>
+      <span class="tree-birth">✶ 11/12/1905</span><span class="tree-death">† 08/04/1969</span>
     </a></div>
 <div class="tree-right">
   <div class="tree-connector"></div>
@@ -1380,12 +1095,37 @@ footer p + p { margin-top: 4px; }
   <div class="tree-ancestors">
     <div class="tree-ancestor-row"><div class="tree-branch">
   <div class="tree-node male"><a href="#ind-I0023" class="tree-name-link">
-      <span class="tree-prenom">Perre Auguste</span>
+      <span class="tree-prenom">Pierre Auguste</span>
       <span class="tree-nom">Bodecher</span>
       <span class="tree-birth">✶ 15/07/1872</span>
     </a></div>
+<div class="tree-right">
+  <div class="tree-connector"></div>
+  <div class="tree-ancestors">
+    <div class="tree-ancestor-row"><div class="tree-branch">
+  <div class="tree-node male"><a href="#ind-I0026" class="tree-name-link">
+      <span class="tree-prenom">Damien</span>
+      <span class="tree-nom">Bodecher</span>
+      <span class="tree-birth">✶ 12/04/1829</span>
+    </a></div>
 </div></div>
-    <div class="tree-ancestor-row"><div class="tree-branch"><div class="tree-node tree-unknown">?</div></div></div>
+    <div class="tree-ancestor-row"><div class="tree-branch">
+  <div class="tree-node female"><a href="#ind-I0027" class="tree-name-link">
+      <span class="tree-prenom">Julie</span>
+      <span class="tree-nom">Bouquet</span>
+      <span class="tree-birth">✶ 19/03/1832</span>
+    </a></div>
+</div></div>
+  </div>
+</div>
+</div></div>
+    <div class="tree-ancestor-row"><div class="tree-branch">
+  <div class="tree-node female"><a href="#ind-I0025" class="tree-name-link">
+      <span class="tree-prenom">Horentine</span>
+      <span class="tree-nom">Chambaz</span>
+      
+    </a></div>
+</div></div>
   </div>
 </div>
 </div></div>
@@ -1423,7 +1163,7 @@ footer p + p { margin-top: 4px; }
 <!-- ===== PIED DE PAGE ===== -->
 <footer>
   <p>Généalogie Gosset · Bodecher — Généré depuis Gramps Web 6.0.8</p>
-  <p>23 individus · 15 familles · depuis 1650</p>
+  <p>26 individus · 16 familles · depuis 1650</p>
 </footer>
 
 <script>
